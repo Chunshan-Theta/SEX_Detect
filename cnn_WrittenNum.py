@@ -166,6 +166,11 @@ GiveAnswer(test_xs[0])
 print("ans:",list(test_ys[0]).index(1))
         #print(test_xs[0],test_ys[0])
         #print(str(i),",",float(compute_accuracy(test_xs,test_ys)))
+
+# save model
+saver = tf.train.Saver()
+save_path = saver.save(sess, "net/save_net.ckpt")
+
 '''
 ---------------101 , 5     =505
 0 , 0.109999999404
