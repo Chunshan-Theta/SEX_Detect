@@ -132,14 +132,21 @@ from MKPicSet import PicSet as PS
 MP = PS()
 MP.AddDir('./TraingData/')
 
-
-for i in range(101):
-    batch_xs, batch_ys = MP.batch(4)
+a=0
+i=0
+#for i in range(100):
+while a<0.95 and i<1000:
+    batch_xs, batch_ys = MP.batch(300)
     sess.run(train_step, feed_dict={xs: batch_xs, ys: batch_ys, keep_prob: 0.5})
     if i % 10 == 0:
-        test_xs, test_ys = MP.batch(10)
+        MP.reset()
+        test_xs, test_ys = MP.batch(300)
         #print(test_xs[0],test_ys[0])
-        print(str(i),",",float(compute_accuracy(test_xs,test_ys)))  
+        print(str(i),",",float(compute_accuracy(test_xs,test_ys))) 
+        a =  float(compute_accuracy(test_xs,test_ys))
+    i+=1    
+    
+    MP.reset()
     #batch_xs, batch_ys = mnist.train.next_batch(50)
     #batch_xs = 圖像陣列 numpy.ndarray[numpy.ndarray[int]]
     #batch_ys = 答案 -> [0,1,0,0,0,0,0,0,0,0]
@@ -148,6 +155,8 @@ for i in range(101):
     #if i % 20 == 0:                                                        
     #   print(str(i),",",compute_accuracy(mnist.test.images,mnist.test.labels))	
 #if you get "Killed" message , you should upgrade limit of memory
+'''
+MP.reset()
 test_xs, test_ys = MP.batch(1)
 
 GiveAnswer(test_xs[0])
@@ -164,13 +173,14 @@ test_xs, test_ys = MP.batch(1)
 
 GiveAnswer(test_xs[0])
 print("ans:",list(test_ys[0]).index(1))
+'''
         #print(test_xs[0],test_ys[0])
         #print(str(i),",",float(compute_accuracy(test_xs,test_ys)))
 
 # save model
 saver = tf.train.Saver()
 save_path = saver.save(sess, "net/save_net.ckpt")
-
+print('saver done')
 '''
 ---------------101 , 5     =505
 0 , 0.109999999404

@@ -30,7 +30,7 @@ assert "Google" in driver.title,"Not Found Target Text in Web Title"
 #    operation that you want on WebSite
 elem = driver.find_element_by_name("q")
 elem.clear()
-elem.send_keys("man")
+elem.send_keys("man photo")
 elem.send_keys(Keys.RETURN)
 
 PicIndex = 0
