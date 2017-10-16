@@ -134,10 +134,10 @@ MP.AddDir('./TraingData/')
 
 
 for i in range(101):
-    batch_xs, batch_ys = MP.batch(100)
+    batch_xs, batch_ys = MP.batch(4)
     sess.run(train_step, feed_dict={xs: batch_xs, ys: batch_ys, keep_prob: 0.5})
     if i % 10 == 0:
-        test_xs, test_ys = MP.batch(100)
+        test_xs, test_ys = MP.batch(10)
         #print(test_xs[0],test_ys[0])
         print(str(i),",",float(compute_accuracy(test_xs,test_ys)))  
     #batch_xs, batch_ys = mnist.train.next_batch(50)
