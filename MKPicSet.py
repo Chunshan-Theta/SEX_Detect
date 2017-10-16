@@ -2,7 +2,7 @@ from Pic2NpArray import ResizeAndConToNumpyArray as tna
 import Image
 import random
 import os
-
+import config as cf
 
 
 class PicSet:
@@ -13,12 +13,12 @@ class PicSet:
         ####
 
 
-    def add(self,PicDir,ans=-1,x_size=28,y_size=28):                        #add pic's data to PIC Set
+    def add(self,PicDir,ans=-1,x_size=cf.pic_size_x,y_size=cf.pic_size_y):                        #add pic's data to PIC Set
         data = Image.open(PicDir)                                           #read a pic from dir
         NArray = tna(data,x_size,y_size)                                    #resize pic
         self.MainTraingData.append([NArray,ans])                            #add data of pic and Ans to Set
         ####
-    def AddDir(self,picdir= "./TraingData/",x_size=28,y_size=28):
+    def AddDir(self,picdir= "./TraingData/",x_size=cf.pic_size_x,y_size=cf.pic_size_y):
         for dirPath, dirNames, fileNames in os.walk(picdir):
             for f in fileNames:                        
                 ans=[0,0,0,0,0,0,0,0,0,0]

@@ -12,7 +12,7 @@ from Pic2NpArray import ResizeAndConToNumpyArray as tna
 import Image
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL']='2'
-
+import config as cf
 # draw pic from dataset  
 import numpy as np
 
@@ -75,32 +75,34 @@ def max_pool_2x2(x):
     return tf.nn.max_pool(x, ksize=[1,2,2,1], strides=[1,2,2,1], padding='SAME')
 
 # define placeholder for inputs to network
-xs = tf.placeholder(tf.float32, [None, 784])/255.   # 28x28
+xs = tf.placeholder(tf.float32, [None, cf.pic_size_x*cf.pic_size_y])/255.   # 28x28
 ys = tf.placeholder(tf.float32, [None, 10])
 keep_prob = tf.placeholder(tf.float32)
-x_image = tf.reshape(xs, [-1, 28, 28, 1])   # -1是指放棄資料原有的所有維度，28,28則是新給維度，1則是指說資料只有一個數值(黑白)，若是彩色則為3(RGB)
+x_image = tf.reshape(xs, [-1, cf.pic_size_x, cf.pic_size_y, 1])   # -1是指放棄資料原有的所有維度，28,28則是新給維度，1則是指說資料只有一個數值(黑白)，若是彩色則為3(RGB)
                                             # x_image.shape = [n_samples, 28,28,1]
 
 ## conv1 layer ##
-W_conv1 = weight_variable([5,5, 1,32])      # patch 5x5, in size 1, out size 32
+W_conv1 = weight_variable([cf.pitch,cf.pitch, 1,32])      # patch 5x5, in size 1, out size 32
                                             # 這邊用5x5是Mnist官方建議的參數，若是圖片較大可以向上調整
                                             # 1 是 image的輸入時的厚度,輸出則要求要是32的厚度 
 b_conv1 = bias_variable([32])               # 設定為輸出的厚度
 h_conv1 = tf.nn.relu(conv2d(x_image, W_conv1) + b_conv1)    # output size 28x28x32
                                                             # tf.nn.relu() 將內容改成非線性資料
 														 
-h_pool1 = max_pool_2x2(h_conv1)                             # output size 14x14x32
+h_pool1 = max_pool_2x2(h_conv1)                             # output size 28x28x32
 
 ## conv2 layer ##
-W_conv2 = weight_variable([5,5, 32, 64])                    # patch 5x5, in size 32, out size 64
+W_conv2 = weight_variable([cf.pitch,cf.pitch, 32, 64])                    # patch 5x5, in size 32, out size 64
 b_conv2 = bias_variable([64])
-h_conv2 = tf.nn.relu(conv2d(h_pool1, W_conv2) + b_conv2)    # output size 14x14x64
-h_pool2 = max_pool_2x2(h_conv2)                             # output size 7x7x64
+h_conv2 = tf.nn.relu(conv2d(h_pool1, W_conv2) + b_conv2)    # output size 28x28x64
+h_pool2 = max_pool_2x2(h_conv2)                             # output size 14x14x64
 
 ## fc1 layer ##
-W_fc1 = weight_variable([7*7*64, 1024])                     # 讓資料厚度變成更大(1024)
+x_fc1 =cf.pic_size_x/4
+y_fc1 =cf.pic_size_y/4
+W_fc1 = weight_variable([x_fc1*y_fc1*64, 1024])                     # 讓資料厚度變成更大(1024)
 b_fc1 = bias_variable([1024])                   
-h_pool2_flat = tf.reshape(h_pool2, [-1, 7*7*64])            # [n_samples, 7, 7, 64] ->> [n_samples, 7*7*64]
+h_pool2_flat = tf.reshape(h_pool2, [-1, x_fc1*y_fc1*64])            # [n_samples, 7, 7, 64] ->> [n_samples, 7*7*64]
                                                             # 轉換為一維數值
 														  
 h_fc1 = tf.nn.relu(tf.matmul(h_pool2_flat, W_fc1) + b_fc1)
@@ -134,106 +136,22 @@ MP.AddDir('./TraingData/')
 
 a=0
 i=0
-#for i in range(100):
-while a<0.95 and i<1000:
-    batch_xs, batch_ys = MP.batch(300)
+while a<cf.SuccessRate and i<1000:
+    batch_xs, batch_ys = MP.batch(cf.batch)
     sess.run(train_step, feed_dict={xs: batch_xs, ys: batch_ys, keep_prob: 0.5})
     if i % 10 == 0:
         MP.reset()
-        test_xs, test_ys = MP.batch(300)
+        test_xs, test_ys = MP.batch(cf.batch)
         #print(test_xs[0],test_ys[0])
         print(str(i),",",float(compute_accuracy(test_xs,test_ys))) 
         a =  float(compute_accuracy(test_xs,test_ys))
     i+=1    
     
     MP.reset()
-    #batch_xs, batch_ys = mnist.train.next_batch(50)
-    #batch_xs = 圖像陣列 numpy.ndarray[numpy.ndarray[int]]
-    #batch_ys = 答案 -> [0,1,0,0,0,0,0,0,0,0]
-    #print(type(batch_xs[0][0]))
-    #sess.run(train_step, feed_dict={xs: batch_xs, ys: batch_ys, keep_prob: 0.5})
-    #if i % 20 == 0:                                                        
-    #   print(str(i),",",compute_accuracy(mnist.test.images,mnist.test.labels))	
-#if you get "Killed" message , you should upgrade limit of memory
-'''
-MP.reset()
-test_xs, test_ys = MP.batch(1)
-
-GiveAnswer(test_xs[0])
-print("ans:",list(test_ys[0]).index(1))
-test_xs, test_ys = MP.batch(1)
-
-GiveAnswer(test_xs[0])
-print("ans:",list(test_ys[0]).index(1))
-test_xs, test_ys = MP.batch(1)
-
-GiveAnswer(test_xs[0])
-print("ans:",list(test_ys[0]).index(1))
-test_xs, test_ys = MP.batch(1)
-
-GiveAnswer(test_xs[0])
-print("ans:",list(test_ys[0]).index(1))
-'''
-        #print(test_xs[0],test_ys[0])
-        #print(str(i),",",float(compute_accuracy(test_xs,test_ys)))
 
 # save model
 saver = tf.train.Saver()
 save_path = saver.save(sess, "net/save_net.ckpt")
 print('saver done')
-'''
----------------101 , 5     =505
-0 , 0.109999999404
-20 , 0.319999992847
-40 , 0.270000010729
-60 , 0.490000009537
-80 , 0.509999990463
-100 , 0.589999973774 ***
-
----------------101 , 10    =1010
-0 , 0.070000000298
-20 , 0.0799999982119
-40 , 0.209999993443
-60 , 0.34999999404
-80 , 0.5
-100 , 0.469999998808 ***
-
----------------101 , 20    =2020
-0 , 0.0500000007451
-20 , 0.230000004172
-40 , 0.449999988079
-60 , 0.629999995232
-80 , 0.819999992847
-100 , 0.850000023842 ***
-
----------------404 , 5    =2020
-0 , 0.119999997318
-20 , 0.129999995232
-40 , 0.270000010729
-60 , 0.509999990463
-80 , 0.589999973774
-100 , 0.449999988079
-120 , 0.509999990463
-140 , 0.519999980927
-160 , 0.600000023842
-180 , 0.77999997139
-200 , 0.730000019073
-220 , 0.800000011921
-240 , 0.680000007153
-260 , 0.790000021458
-280 , 0.899999976158
-300 , 0.810000002384
-320 , 0.819999992847
-340 , 0.810000002384
-360 , 0.740000009537
-380 , 0.899999976158
-400 , 0.860000014305 ***
 
 
-
-
-
-
-
-
-'''
