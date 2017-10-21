@@ -19,18 +19,17 @@ for dirPath, dirNames, fileNames in os.walk('./Test/1/'):
     for f in fileNames:#os.path.join(dirPath, f)
         data = Image.open(os.path.join(dirPath, f)) 
         a,c = Detect.DetectAPic(data)
-        print a,c
+        print dirPath,f,a,c
         if a == 1:
-            count+=1 
-           
+            count+=1
 for dirPath, dirNames, fileNames in os.walk('./Test/0/'):
     NumPic += len(fileNames)
     for f in fileNames:#os.path.join(dirPath, f)
         data = Image.open(os.path.join(dirPath, f)) 
         a,c = Detect.DetectAPic(data)
-        print a,c
+        print dirPath,f,a,c
         if a == 0:
-            count+=1 
+            count+=1
 
 print float(count)/float(NumPic)
 '''

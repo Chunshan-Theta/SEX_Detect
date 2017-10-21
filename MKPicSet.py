@@ -20,8 +20,10 @@ class PicSet:
         ####
     def AddDir(self,picdir= "./TraingData/",x_size=cf.pic_size_x,y_size=cf.pic_size_y):
         for dirPath, dirNames, fileNames in os.walk(picdir):
-            for f in fileNames:                        
-                ans=[0,0,0,0,0,0,0,0,0,0]
+            for f in fileNames:
+                ans=[]
+                for t in range(cf.NumOfType):
+                    ans.append(0)                
                 ans[int(dirPath[len(picdir):])]+=1
                 self.add(str(os.path.join(dirPath, f)),ans,x_size,y_size)
                 print "add pic:",os.path.join(dirPath, f),"The Pic's Ans:",ans

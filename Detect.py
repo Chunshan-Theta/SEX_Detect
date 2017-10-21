@@ -43,7 +43,7 @@ def max_pool_2x2(x):
 
 # define placeholder for inputs to network
 xs = tf.placeholder(tf.float32, [None, cf.pic_size_x*cf.pic_size_y])/255.   # 28x28
-ys = tf.placeholder(tf.float32, [None, 10])
+ys = tf.placeholder(tf.float32, [None, cf.NumOfType])
 keep_prob = tf.placeholder(tf.float32)
 x_image = tf.reshape(xs, [-1, cf.pic_size_x, cf.pic_size_y, 1])   # -1是指放棄資料原有的所有維度，28,28則是新給維度，1則是指說資料只有一個數值(黑白)，若是彩色則為3(RGB)
 										    # x_image.shape = [n_samples, 28,28,1]
@@ -77,8 +77,8 @@ h_fc1_drop = tf.nn.dropout(h_fc1, keep_prob)			  # 避免過度學習
 														  # keep_prob = tf.placeholder(tf.float32)
 
 ## fc2 layer ##
-W_fc2 = weight_variable([1024, 10])
-b_fc2 = bias_variable([10])
+W_fc2 = weight_variable([1024, cf.NumOfType])
+b_fc2 = bias_variable([cf.NumOfType])
 prediction = tf.nn.softmax(tf.matmul(h_fc1_drop, W_fc2) + b_fc2)
 
 
