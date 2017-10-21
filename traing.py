@@ -143,7 +143,7 @@ while a<cf.SuccessRate and i<cf.MAX_Training:
         MP.reset()
         test_xs, test_ys = MP.batch(cf.batch)
         #print(test_xs[0],test_ys[0])
-        print(str(i),",",float(compute_accuracy(test_xs,test_ys))) 
+        print('training time: ',str(i),",successful rate:",float(compute_accuracy(test_xs,test_ys)),"%") 
         a =  float(compute_accuracy(test_xs,test_ys))
     i+=1    
     
